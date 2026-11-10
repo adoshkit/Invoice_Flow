@@ -1,0 +1,79 @@
+# InvoiceFlow blue colour system
+# Standard: sRGB HEX colour notation (#RRGGBB), exposed as semantic CSS design tokens.
+# Edit the values after = only. Keep the section names and token names unchanged.
+# Replace the project colours.txt with this file (rename it to colours.txt).
+# accent is the single source of truth for brand marks, selected controls, table headers and the first chart series. It is #6FA6D8 in both themes.
+
+[Dark]
+color_scheme = dark
+background = #0D1420
+panel = #151F2D
+panel_alt = #1D2B3D
+text = #EEF4FB
+muted = #ACBED2
+border = #354A60
+accent = #6FA6D8
+accent_hover = #8AB8E2
+accent_text = #102033
+success = #78C6A2
+success_bg = #173529
+warning = #E4B76D
+warning_bg = #3A2D19
+danger = #E58A91
+danger_bg = #3B2026
+input = #111B29
+tab_bg = #192638
+tab_selected = #2B4058
+table_bg = #111B29
+table_alt = #172334
+chart_bg = #151F2D
+chart_track = #2B3D50
+chart_2 = #4E88BC
+chart_3 = #A9C9E8
+chart_4 = #35658F
+risk_low = #8BD4AE
+risk_low_bg = #173529
+risk_moderate = #E4B76D
+risk_moderate_bg = #3A2D19
+risk_high = #E9A17C
+risk_high_bg = #40291F
+risk_critical = #E58A91
+risk_critical_bg = #3B2026
+shadow = 0 14px 36px rgba(0, 0, 0, 0.20)
+
+[Light]
+color_scheme = light
+background = #F2F6FA
+panel = #FFFFFF
+panel_alt = #EAF1F7
+text = #17293B
+muted = #52677C
+border = #CCD9E5
+accent = #6FA6D8
+accent_hover = #528EC6
+accent_text = #102033
+success = #176B4A
+success_bg = #E4F2EB
+warning = #80530B
+warning_bg = #F8EFD9
+danger = #A42F3C
+danger_bg = #F8E8EA
+input = #FFFFFF
+tab_bg = #FFFFFF
+tab_selected = #E2EDF7
+table_bg = #FFFFFF
+table_alt = #F4F8FB
+chart_bg = #FFFFFF
+chart_track = #E3EAF1
+chart_2 = #4E88BC
+chart_3 = #A9C9E8
+chart_4 = #35658F
+risk_low = #176B4A
+risk_low_bg = #E4F2EB
+risk_moderate = #80530B
+risk_moderate_bg = #F8EFD9
+risk_high = #97431D
+risk_high_bg = #F9EAE1
+risk_critical = #A42F3C
+risk_critical_bg = #F8E8EA
+shadow = 0 12px 30px rgba(23, 41, 59, 0.07)
