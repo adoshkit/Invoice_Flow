@@ -460,17 +460,20 @@ def match_po(x, vendor, tol, tol_abs=None, line_tol=0.03, as_of=None):
         checks.append(check_lines(x, po, rate, line_tol))
     return checks, info
 
-def decide(checks):
+def decide(checks, risk):
     rej = [c for c in checks if c["status"] == "fail" and c["severity"] == "reject"]
     hold = [c for c in checks if c["status"] == "fail" and c["severity"] == "hold"]
     warn = [c for c in checks if c["status"] == "warn"]
     fmt = lambda cs: "\n".join(f"- **[{c['id']}] {c['name']}** - {c['detail']}" for c in cs)
-    if rej:
-        return "REJECT", f"Rejected - {len(rej)} blocking issue(s):\n{fmt(rej)}" + \
-            (f"\n\nAlso flagged for review:\n{fmt(hold)}" if hold else "")
+
+    if rej or risk >= 50:
+        reason = f"Rejected - risk score {risk}/100." if risk >= 50 else f"Rejected - {len(rej)} blocking issue(s):\n{fmt(rej)}"
+        return "REJECT", reason
+
     if hold:
         return "HOLD", f"Held for human review - {len(hold)} issue(s) need a decision:\n{fmt(hold)}" + \
             (f"\n\nWarnings:\n{fmt(warn)}" if warn else "")
+
     passed = [c for c in checks if c["status"] == "pass"]
     return "APPROVE", f"Approved - all {len(passed)} applicable checks passed." + \
         (f"\n\nWarnings noted:\n{fmt(warn)}" if warn else "")
@@ -560,8 +563,11 @@ def run_pipeline(pdf_bytes, filename, tolerance=0.02, tolerance_abs=None, engine
 
     t0 = time.time()
     yield start("Decide", "Applying decision rules, scoring risk and routing...")
-    decision, reason = decide(R["checks"])
     amount = (po_info.get("po_amount") if R["po"] else None) or x.get("total")
+
+    risk, owner, nxt = assess(R["checks"], "HOLD", amount)
+    decision, reason = decide(R["checks"], risk)
+
     risk, owner, nxt = assess(R["checks"], decision, amount)
     reason = f"{reason}\n\n**Next step:** {nxt}"
     yield done("Decide", t0, f"{decision} · risk {risk}/100 · {owner}")
