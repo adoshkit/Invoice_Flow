@@ -5,3 +5,5 @@ pillow
 pandas
 python-dotenv
 reportlab
+google-genai>=1.0
+pydantic>=2
