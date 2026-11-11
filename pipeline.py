@@ -56,7 +56,7 @@ OWNER_PRIORITY = [
     ("L1", "Buyer / procurement"), ("P4", "Buyer / procurement"), ("P3", "Buyer / procurement"),
     ("P5", "AP clerk"), ("V1", "AP clerk"), ("V2", "AP clerk"), ("V3", "AP clerk"), ("V6", "AP clerk"),
 ]
-RISK_WEIGHT = {"reject": 60, "hold": 25, "warn": 5}
+RISK_WEIGHT = {"reject": 50, "hold": 25, "warn": 5}
 
 def gemini_available():
     return bool(os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY"))
