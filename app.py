@@ -22,7 +22,7 @@ from theme import inject_theme
 db.init_db()
 st.set_page_config(page_title="InvoiceFlow | Accounts Payable", layout="wide", initial_sidebar_state="expanded")
 
-MANUAL_MINUTES = 6
+MANUAL_MINUTES = 3
 STATUS_LABELS = {"APPROVE": "Approved", "HOLD": "Awaiting review", "REJECT": "Rejected"}
 STATUS_OPTIONS = ["APPROVE", "HOLD", "REJECT"]
 STAGE_LABELS = {"pending": "Queued", "running": "In progress", "done": "Complete", "error": "Error"}
@@ -482,7 +482,7 @@ def admin_login_panel():
             st.rerun()
         return True
     with st.form("admin_login_form", clear_on_submit=False):
-        st.markdown("##### Administrator sign-in")
+        st.markdown("##### Administrator sign in")
         username = st.text_input("Username", autocomplete="username")
         password = st.text_input("Password", type="password", autocomplete="current-password")
         submit = st.form_submit_button("Sign in", type="primary")
@@ -504,7 +504,7 @@ with st.sidebar:
         '<div class="if-brand-sub">Accounts payable workspace</div></div></div>',
         unsafe_allow_html=True,
     )
-    st.caption("Invoice intake, explainable checks and controlled approval.")
+    st.caption("Save time, automate repetitive tasks.")
     appearance = st.radio("Appearance", ["Dark", "Light"], horizontal=True, index=1,
                          label_visibility="visible")
     ACTIVE_COLORS = inject_theme(appearance)
@@ -518,11 +518,11 @@ with st.sidebar:
                 os.environ["GEMINI_API_KEY"] = key_in
             st.caption(f"Gemini active · {pipeline.MODEL}" if pipeline.gemini_available() else "No key detected; Auto mode uses offline rules.")
         else:
-            st.caption("Offline rules · no API key or network connection required.")
+            st.caption("Offline : API key not required.")
         st.markdown("**Matching tolerances**")
         tol_pct = st.slider("PO balance tolerance (%)", 0.0, 10.0, float(db.get_setting("tol_pct", 2.0)), 0.5)
         tol_abs = st.slider("Absolute cap (currency units)", 0, 1000, int(float(db.get_setting("tol_abs", 250))), 10)
-        line_pct = st.slider("Line unit-price tolerance (%)", 0.0, 15.0, float(db.get_setting("line_pct", 3.0)), 0.5)
+        line_pct = st.slider("Line unit price tolerance (%)", 0.0, 15.0, float(db.get_setting("line_pct", 3.0)), 0.5)
         as_of = st.date_input("Processing date", value=date.today())
     st.divider()
     if admin_is_authenticated():
@@ -532,9 +532,9 @@ with st.sidebar:
 
 st.markdown(
     '<div class="if-hero"><div><div class="if-kicker">Finance operations / invoice control</div>'
-    '<div class="if-hero-title">InvoiceFlow</div><div class="if-hero-copy">A clear path from incoming document to accountable decision. '
-    'Review the source, inspect extracted fields and track every status change.</div></div>'
-    '<div class="if-live-pill">CONTROLLED WORKFLOW&nbsp; / &nbsp;AUDIT TRAIL</div></div>',
+    '<div class="if-hero-title">InvoiceFlow</div><div class="if-hero-copy">Manage invoice verification, '
+    'exception review and approval tracking in one workspace.</div></div>'
+    '<div class="if-live-pill"> Invoice Processing </div></div>',
     unsafe_allow_html=True,
 )
 
@@ -545,7 +545,7 @@ tab_workspace, tab_batch, tab_approved, tab_awaiting, tab_rejected, tab_insights
 samples = sorted(Path("samples").glob("*.pdf"))
 
 with tab_workspace:
-    section_heading("Process an invoice", "Single-document intake")
+    section_heading("Process an invoice", "Single document intake")
     mode = st.radio("Document source", ["Upload a PDF", "Use a sample invoice"], horizontal=True)
     pdf_bytes, filename = None, None
     if mode == "Upload a PDF":
@@ -670,7 +670,7 @@ with tab_insights:
         metrics[2].metric("Awaiting review", awaiting_count)
         metrics[3].metric("Rejected", rejected_count)
         metrics[4].metric("Approved value", f"{approved_value:,.2f}")
-        st.caption(f"Straight-through approvals: {straight_through / count:.0%} · Estimated AP time saved: {straight_through * MANUAL_MINUTES} minutes, based on {MANUAL_MINUTES} assumed manual minutes per invoice.")
+        st.caption(f"Straight approvals: {straight_through / count:.0%} · Estimated AP time saved: {straight_through * MANUAL_MINUTES} minutes, based on {MANUAL_MINUTES} assumed manual minutes per invoice.")
 
         chart_left, chart_right = st.columns(2, gap="large")
         with chart_left:
@@ -704,7 +704,7 @@ with tab_insights:
             else:
                 st.caption("No rule warnings or failures have been recorded.")
 
-        section_heading("Approved purchase-order utilisation", "Procurement position")
+        section_heading("Approved purchase order utilisation", "Procurement position")
         po_frame = pd.DataFrame(db.list_pos())
         if not po_frame.empty:
             po_frame["Utilisation"] = (po_frame["invoiced"] / po_frame["amount"] * 100).clip(lower=0).round(1)
@@ -718,7 +718,7 @@ with tab_insights:
                                "invoiceflow_run_history.csv", "text/csv")
 
 with tab_procurement:
-    section_heading("Procurement reference", "Vendor master and purchase-order data")
+    section_heading("Procurement reference", "Vendor master and purchase order data")
     with st.expander("Rule assumptions and operating limits", expanded=False):
         assumptions_path = Path("ASSUMPTIONS.md")
         st.markdown(assumptions_path.read_text() if assumptions_path.exists() else "See README.md for the current rule assumptions.")
@@ -740,7 +740,7 @@ with tab_procurement:
         section_heading("PO line items", "Ordered quantities and prices")
         show_dataframe(pd.DataFrame(db.list_po_lines()), hide_index=True, use_container_width=True)
     with line_right:
-        section_heading("Foreign-exchange reference", "Mock rates · USD per unit")
+        section_heading("Foreign exchange reference", "Mock rates · USD per unit")
         show_dataframe(pd.DataFrame(sorted(db.FX_RATES.items()), columns=["Currency", "USD per unit"]),
                      hide_index=True, use_container_width=True)
 
@@ -777,7 +777,7 @@ with tab_admin:
 
         with admin_tabs[1]:
             vendors = db.list_vendors()
-            st.caption("Allowed vendors can pass the approved-vendor check. Blocked vendors are rejected by the invoice pipeline on their next processing run.")
+            st.caption("Allowed vendors can pass the approved vendor check. Blocked vendors are rejected by the invoice pipeline on their next processing run.")
             if vendors:
                 vendor_names = [v["name"] for v in vendors]
                 selected_vendor_name = st.selectbox("Choose vendor", vendor_names, key="admin_vendor_select")
@@ -867,7 +867,7 @@ with tab_admin:
                 else:
                     db.set_setting("admin_password_hash", password_hash(new_password))
                     db.log_admin_event(actor, "Administrator password changed", "admin", "Password hash updated from the website")
-                    st.success("Password updated. Use the new password at your next sign-in.")
+                    st.success("Password updated. Use the new password at your next sign in.")
             st.divider(); section_heading("History controls", "Destructive action")
             confirm_wipe = st.checkbox("I understand this permanently clears the local run history", key="admin_confirm_wipe")
             if st.button("Clear all invoice history", type="secondary", disabled=not confirm_wipe):
